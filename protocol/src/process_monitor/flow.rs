@@ -2,33 +2,38 @@ use rill_protocol::flow::core::{Flow, TimedEvent};
 use rill_protocol::flow::location::Location;
 use rill_protocol::io::provider::StreamType;
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
-
-//pub const LOCATION: Location = Location::new("logs:plain_logs");
+use std::collections::VecDeque;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PlainLogsState {}
+pub struct ProcessMonitorState {
+    logs: VecDeque<String>,
+}
 
 #[allow(clippy::new_without_default)]
-impl PlainLogsState {
+impl ProcessMonitorState {
     pub fn new() -> Self {
-        Self {}
+        Self {
+            logs: VecDeque::new(),
+        }
     }
 }
 
-impl Flow for PlainLogsState {
-    type Action = PlainLogsAction;
-    type Event = PlainLogsEvent;
+impl Flow for ProcessMonitorState {
+    type Action = ProcessMonitorAction;
+    type Event = ProcessMonitorEvent;
 
     fn stream_type() -> StreamType {
-        StreamType::from("rillrate::logs::plain_logs::v0")
+        StreamType::from("rillrate::agent::process_monitor::v0")
     }
 
     fn apply(&mut self, event: TimedEvent<Self::Event>) {}
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum PlainLogsAction {}
+pub enum ProcessMonitorAction {}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum PlainLogsEvent {}
+pub enum ProcessMonitorEvent {
+    AddLogs { lines: Vec<String> },
+    CleanLogs,
+}

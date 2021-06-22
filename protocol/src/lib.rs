@@ -4,4 +4,4 @@ pub fn provider_type() -> StreamType {
     "rillrate::agent::logs".into()
 }
 
-pub mod plain_logs;
+pub mod process_monitor;

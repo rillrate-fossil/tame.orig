@@ -5,8 +5,8 @@ use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Actor, Consumer, Context, InterruptedBy, StartedBy};
 use rill_protocol::flow::core::{ActionEnvelope, Activity};
-use rillrate_agent_protocol::plain_logs::tracer::{
-    PlainLogsState, PlainLogsTracer, PlainLogsWatcher,
+use rillrate_agent_protocol::process_monitor::tracer::{
+    ProcessMonitorState, ProcessMonitorTracer, ProcessMonitorWatcher,
 };
 use thiserror::Error;
 use tokio_stream::wrappers::{errors::BroadcastStreamRecvError, BroadcastStream};
@@ -18,15 +18,15 @@ enum ForwarderError {
 }
 
 pub struct Forwarder {
-    tracer: PlainLogsTracer,
-    watcher: Option<PlainLogsWatcher>,
+    tracer: ProcessMonitorTracer,
+    watcher: Option<ProcessMonitorWatcher>,
 }
 
 impl Forwarder {
     pub fn new() -> Self {
         // TODO: Use a parameter here
         let path = "my.logs".parse().unwrap();
-        let (tracer, watcher) = PlainLogsTracer::new(path);
+        let (tracer, watcher) = ProcessMonitorTracer::new(path);
         Self {
             tracer,
             watcher: Some(watcher),
@@ -60,10 +60,10 @@ impl InterruptedBy<Supervisor> for Forwarder {
 }
 
 #[async_trait]
-impl Consumer<Result<ActionEnvelope<PlainLogsState>, BroadcastStreamRecvError>> for Forwarder {
+impl Consumer<Result<ActionEnvelope<ProcessMonitorState>, BroadcastStreamRecvError>> for Forwarder {
     async fn handle(
         &mut self,
-        event: Result<ActionEnvelope<PlainLogsState>, BroadcastStreamRecvError>,
+        event: Result<ActionEnvelope<ProcessMonitorState>, BroadcastStreamRecvError>,
         _ctx: &mut Context<Self>,
     ) -> Result<(), Error> {
         let envelope = event?;
