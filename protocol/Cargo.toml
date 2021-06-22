@@ -1,15 +1,15 @@
 [package]
-name = "rillrate-logs-protocol"
+name = "rillrate-agent-protocol"
 version = "0.1.0"
 edition = "2018"
-repository = "https://github.com/rillrate/logs"
-homepage = "https://github.com/rillrate/logs"
-documentation = "https://docs.rs/rillrate-logs-protocol/"
+repository = "https://github.com/rillrate/agent"
+homepage = "https://github.com/rillrate/agent"
+documentation = "https://docs.rs/rillrate-agent-protocol/"
 license = "Apache-2.0"
 readme = "README.md"
 keywords = ["logging"]
 categories = ["development-tools::debugging"]
-description = "RillRate agent for logging"
+description = "RillRate Agent"
 
 [dependencies]
 derive_more = "0.99.14"

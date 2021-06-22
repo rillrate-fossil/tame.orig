@@ -870,7 +870,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rillrate-logs"
+name = "rillrate-agent"
 version = "0.1.0"
 dependencies = [
  "anyhow",
@@ -880,13 +880,14 @@ dependencies = [
  "meio",
  "rill-engine",
  "rill-protocol",
- "rillrate-logs-protocol",
+ "rillrate-agent-protocol",
+ "thiserror",
  "tokio",
  "tokio-stream",
 ]
 
 [[package]]
-name = "rillrate-logs-protocol"
+name = "rillrate-agent-protocol"
 version = "0.1.0"
 dependencies = [
  "derive_more",

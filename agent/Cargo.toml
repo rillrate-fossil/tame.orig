@@ -1,16 +1,16 @@
 [package]
-name = "rillrate-logs"
+name = "rillrate-agent"
 version = "0.1.0"
 authors = ["Denis Kolodin <deniskolodin@gmail.com>"]
 edition = "2018"
-repository = "https://github.com/rillrate/logs"
-homepage = "https://github.com/rillrate/logs"
-documentation = "https://docs.rs/rillrate-logs/"
+repository = "https://github.com/rillrate/agent"
+homepage = "https://github.com/rillrate/agent"
+documentation = "https://docs.rs/rillrate-agent/"
 license = "Apache-2.0"
 readme = "README.md"
 keywords = ["logging"]
 categories = ["development-tools::debugging"]
-description = "RillRate agent for logging"
+description = "RillRate Agent"
 
 [dependencies]
 anyhow = "1.0.41"
@@ -20,6 +20,7 @@ log = "0.4.14"
 meio = "0.89.4"
 rill-engine = "0.30.0-alpha.7"
 rill-protocol = "0.30.0-alpha.7"
-rillrate-logs-protocol = { version = "0.1.0", path = "../protocol" }
+rillrate-agent-protocol = { version = "0.1.0", path = "../protocol" }
+thiserror = "1.0.25"
 tokio = "1.7.1"
 tokio-stream = { version = "0.1.6", features = ["sync"] }

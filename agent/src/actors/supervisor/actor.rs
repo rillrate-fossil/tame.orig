@@ -2,7 +2,7 @@ use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Actor, Context, Eliminated, IdOf, InterruptedBy, StartedBy, System};
 use rill_engine::{EngineConfig, RillEngine};
-use rillrate_logs_protocol::provider_type;
+use rillrate_agent_protocol::provider_type;
 
 pub struct Supervisor {}
 
