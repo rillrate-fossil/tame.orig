@@ -12,3 +12,4 @@ categories = ["development-tools::debugging"]
 description = "RillRate agent for logging"
 
 [dependencies]
+rill-protocol = "0.30.0-alpha.6"
