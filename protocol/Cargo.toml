@@ -12,4 +12,10 @@ categories = ["development-tools::debugging"]
 description = "RillRate agent for logging"
 
 [dependencies]
+rill-engine = { version = "0.30.0-alpha.6", optional = true }
 rill-protocol = "0.30.0-alpha.6"
+serde = "1.0.126"
+
+[features]
+default = ["tracers"]
+tracers = ["rill-engine"]
