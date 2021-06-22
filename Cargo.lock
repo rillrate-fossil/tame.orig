@@ -887,6 +887,7 @@ dependencies = [
 name = "rillrate-logs-protocol"
 version = "0.1.0"
 dependencies = [
+ "derive_more",
  "rill-engine",
  "rill-protocol",
  "serde",
