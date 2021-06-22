@@ -1,0 +1,22 @@
+[package]
+name = "rillrate-logs"
+version = "0.1.0"
+authors = ["Denis Kolodin <deniskolodin@gmail.com>"]
+edition = "2018"
+repository = "https://github.com/rillrate/rillrate-logs"
+homepage = "https://github.com/rillrate/rillrate-logs"
+documentation = "https://docs.rs/rillrate-logs/"
+license = "Apache-2.0"
+readme = "README.md"
+keywords = ["logging"]
+categories = ["development-tools::debugging"]
+description = "RillRate agent for logging"
+
+[dependencies]
+anyhow = "1.0.41"
+async-trait = "0.1.50"
+env_logger = "0.8.4"
+log = "0.4.14"
+meio = "0.89.4"
+rill-protocol = "0.30.0-alpha.6"
+tokio = "1.7.1"
