@@ -1,21 +1,13 @@
-mod proc_runner;
+mod consumer;
+mod process_runner;
 
 use crate::actors::supervisor::Supervisor;
 use anyhow::Error;
 use async_trait::async_trait;
-use meio::{Actor, Consumer, Context, InterruptedBy, StartedBy};
-use rill_protocol::flow::core::{ActionEnvelope, Activity};
+use meio::{Actor, Context, InterruptedBy, StartedBy};
 use rillrate_agent_protocol::process_monitor::tracer::{
-    ProcessMonitorState, ProcessMonitorTracer, ProcessMonitorWatcher,
+    ProcessMonitorTracer, ProcessMonitorWatcher,
 };
-use thiserror::Error;
-use tokio_stream::wrappers::{errors::BroadcastStreamRecvError, BroadcastStream};
-
-#[derive(Debug, Error)]
-enum ForwarderError {
-    #[error("inner value already taken")]
-    AlreadyTaken,
-}
 
 pub struct Forwarder {
     tracer: ProcessMonitorTracer,
@@ -41,12 +33,8 @@ impl Actor for Forwarder {
 #[async_trait]
 impl StartedBy<Supervisor> for Forwarder {
     async fn handle(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
-        // TODO: Spawn a task to read stderr
-
-        let rx = self.watcher.take().ok_or(ForwarderError::AlreadyTaken)?;
-        let stream = BroadcastStream::new(rx);
-        ctx.attach(stream, (), ());
-
+        self.listen_to_actions(ctx)?;
+        self.spawn_process(ctx)?;
         Ok(())
     }
 }
@@ -55,23 +43,6 @@ impl StartedBy<Supervisor> for Forwarder {
 impl InterruptedBy<Supervisor> for Forwarder {
     async fn handle(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
         ctx.shutdown();
-        Ok(())
-    }
-}
-
-#[async_trait]
-impl Consumer<Result<ActionEnvelope<ProcessMonitorState>, BroadcastStreamRecvError>> for Forwarder {
-    async fn handle(
-        &mut self,
-        event: Result<ActionEnvelope<ProcessMonitorState>, BroadcastStreamRecvError>,
-        _ctx: &mut Context<Self>,
-    ) -> Result<(), Error> {
-        let envelope = event?;
-        match envelope.activity {
-            Activity::Connected => {}
-            Activity::Action(action) => {}
-            Activity::Disconnected => {}
-        }
         Ok(())
     }
 }

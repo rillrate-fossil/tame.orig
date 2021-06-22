@@ -876,6 +876,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "env_logger",
+ "futures",
  "log",
  "meio",
  "rill-engine",

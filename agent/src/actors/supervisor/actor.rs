@@ -1,3 +1,4 @@
+use crate::actors::forwarder::Forwarder;
 use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Actor, Context, Eliminated, IdOf, InterruptedBy, StartedBy, System};
@@ -28,10 +29,8 @@ impl StartedBy<System> for Supervisor {
         let engine = RillEngine::new(EngineConfig::new(provider_type()));
         ctx.spawn_actor(engine, Group::Engine);
 
-        /*
-        let worker = Worker::new();
+        let worker = Forwarder::new();
         ctx.spawn_actor(worker, Group::Workers);
-        */
 
         Ok(())
     }
@@ -56,11 +55,13 @@ impl Eliminated<RillEngine> for Supervisor {
     }
 }
 
-/*
 #[async_trait]
-impl Eliminated<Worker> for Supervisor {
-    async fn handle(&mut self, _id: IdOf<Worker>, _ctx: &mut Context<Self>) -> Result<(), Error> {
+impl Eliminated<Forwarder> for Supervisor {
+    async fn handle(
+        &mut self,
+        _id: IdOf<Forwarder>,
+        _ctx: &mut Context<Self>,
+    ) -> Result<(), Error> {
         Ok(())
     }
 }
-*/
