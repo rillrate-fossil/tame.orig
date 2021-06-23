@@ -24,10 +24,10 @@ pub enum ProcessStatus {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProcessMonitorState {
-    command: Command,
-    process_status: ProcessStatus,
-    depth: u32,
-    logs: VecDeque<String>,
+    pub command: Command,
+    pub process_status: ProcessStatus,
+    pub depth: u32,
+    pub logs: VecDeque<String>,
 }
 
 #[allow(clippy::new_without_default)]
