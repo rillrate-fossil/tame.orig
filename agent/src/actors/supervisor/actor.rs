@@ -3,7 +3,7 @@ use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Actor, Context, Eliminated, IdOf, InterruptedBy, StartedBy, System};
 use rill_engine::{EngineConfig, RillEngine};
-use rillrate_agent_protocol::provider_type;
+use rillrate_agent_protocol::process_monitor::tracer::Command;
 
 pub struct Supervisor {}
 
@@ -26,12 +26,7 @@ impl Actor for Supervisor {
 #[async_trait]
 impl StartedBy<System> for Supervisor {
     async fn handle(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
-        let engine = RillEngine::new(EngineConfig::new(provider_type()));
-        ctx.spawn_actor(engine, Group::Engine);
-
-        let worker = Forwarder::new();
-        ctx.spawn_actor(worker, Group::Workers);
-
+        self.spawn_engine(ctx);
         Ok(())
     }
 }
@@ -44,6 +39,14 @@ impl InterruptedBy<System> for Supervisor {
     }
 }
 
+impl Supervisor {
+    fn spawn_engine(&mut self, ctx: &mut Context<Self>) {
+        use rillrate_agent_protocol::provider_type;
+        let engine = RillEngine::new(EngineConfig::new(provider_type()));
+        ctx.spawn_actor(engine, Group::Engine);
+    }
+}
+
 #[async_trait]
 impl Eliminated<RillEngine> for Supervisor {
     async fn handle(
@@ -52,6 +55,13 @@ impl Eliminated<RillEngine> for Supervisor {
         _ctx: &mut Context<Self>,
     ) -> Result<(), Error> {
         Ok(())
+    }
+}
+
+impl Supervisor {
+    fn spawn_command(&mut self, command: Command, ctx: &mut Context<Self>) {
+        let worker = Forwarder::new(command);
+        ctx.spawn_actor(worker, Group::Workers);
     }
 }
 

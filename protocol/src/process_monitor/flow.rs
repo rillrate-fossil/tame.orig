@@ -8,6 +8,12 @@ pub type Pid = u32;
 pub type ExitCode = i32;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Command {
+    pub command: String,
+    pub args: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ProcessStatus {
     NotDetected,
     Alive { pid: Option<Pid> },
@@ -16,6 +22,7 @@ pub enum ProcessStatus {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProcessMonitorState {
+    command: Command,
     process_status: ProcessStatus,
     depth: u32,
     logs: VecDeque<String>,
@@ -23,8 +30,9 @@ pub struct ProcessMonitorState {
 
 #[allow(clippy::new_without_default)]
 impl ProcessMonitorState {
-    pub fn new() -> Self {
+    pub fn new(command: Command) -> Self {
         Self {
+            command,
             process_status: ProcessStatus::NotDetected,
             depth: 128,
             logs: VecDeque::new(),

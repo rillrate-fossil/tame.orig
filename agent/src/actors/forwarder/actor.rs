@@ -6,7 +6,7 @@ use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Actor, Context, InterruptedBy, StartedBy};
 use rillrate_agent_protocol::process_monitor::tracer::{
-    ProcessMonitorTracer, ProcessMonitorWatcher,
+    Command, ProcessMonitorTracer, ProcessMonitorWatcher,
 };
 
 pub struct Forwarder {
@@ -15,10 +15,10 @@ pub struct Forwarder {
 }
 
 impl Forwarder {
-    pub fn new() -> Self {
+    pub fn new(command: Command) -> Self {
         // TODO: Use a parameter here
         let path = "my.logs".parse().unwrap();
-        let (tracer, watcher) = ProcessMonitorTracer::new(path);
+        let (tracer, watcher) = ProcessMonitorTracer::new(path, command);
         Self {
             tracer,
             watcher: Some(watcher),

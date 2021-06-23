@@ -11,8 +11,8 @@ pub struct ProcessMonitorTracer {
 }
 
 impl ProcessMonitorTracer {
-    pub fn new(path: Path) -> (Self, ProcessMonitorWatcher) {
-        let state = ProcessMonitorState::new();
+    pub fn new(path: Path, command: Command) -> (Self, ProcessMonitorWatcher) {
+        let state = ProcessMonitorState::new(command);
         let (tracer, watcher) = Tracer::new_push(state, path);
         (Self { tracer }, watcher)
     }
