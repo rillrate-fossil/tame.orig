@@ -27,13 +27,13 @@ impl ProcessMonitorTracer {
         self.tracer.send(msg, None, None);
     }
 
-    pub fn assign_pid(&self, pid: Pid) {
+    pub fn assign_pid(&self, pid: Option<Pid>) {
         let msg = ProcessMonitorEvent::AssignPid { pid };
         self.tracer.send(msg, None, None);
     }
 
-    pub fn set_exit_status(&self, status: Option<ExitStatus>) {
-        let msg = ProcessMonitorEvent::SetExitStatus { status };
+    pub fn set_exit_code(&self, code: Option<ExitCode>) {
+        let msg = ProcessMonitorEvent::SetExitCode { code };
         self.tracer.send(msg, None, None);
     }
 }

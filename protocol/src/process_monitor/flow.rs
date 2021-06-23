@@ -4,14 +4,14 @@ use rill_protocol::io::provider::StreamType;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 
-pub type Pid = i32;
-pub type ExitStatus = i32;
+pub type Pid = u32;
+pub type ExitCode = i32;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ProcessStatus {
     NotDetected,
-    Alive { pid: Pid },
-    Terminated { status: Option<ExitStatus> },
+    Alive { pid: Option<Pid> },
+    Terminated { code: Option<ExitCode> },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -57,8 +57,8 @@ impl Flow for ProcessMonitorState {
             ProcessMonitorEvent::AssignPid { pid } => {
                 self.process_status = ProcessStatus::Alive { pid };
             }
-            ProcessMonitorEvent::SetExitStatus { status } => {
-                self.process_status = ProcessStatus::Terminated { status };
+            ProcessMonitorEvent::SetExitCode { code } => {
+                self.process_status = ProcessStatus::Terminated { code };
             }
         }
     }
@@ -76,6 +76,6 @@ pub enum ProcessMonitorAction {
 pub enum ProcessMonitorEvent {
     AddLogs { lines: Vec<String> },
     ClearLogs,
-    AssignPid { pid: Pid },
-    SetExitStatus { status: Option<ExitStatus> },
+    AssignPid { pid: Option<Pid> },
+    SetExitCode { code: Option<ExitCode> },
 }

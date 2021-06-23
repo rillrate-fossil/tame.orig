@@ -38,6 +38,7 @@ impl LiteTask for ProcessRunner {
             .stderr(Stdio::piped())
             .kill_on_drop(true)
             .spawn()?;
+        self.tracer.assign_pid(child.id());
         if let Some(stderr) = child.stderr.take() {
             let lines = BufReader::new(stderr).lines();
             let mut chunks = LinesStream::new(lines).ready_chunks(64);
@@ -47,6 +48,7 @@ impl LiteTask for ProcessRunner {
             }
         }
         let status = child.wait().await?;
+        self.tracer.set_exit_code(status.code());
         Ok(status)
     }
 }
