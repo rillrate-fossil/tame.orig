@@ -4,8 +4,19 @@ use rill_protocol::io::provider::StreamType;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 
+pub type Pid = i32;
+pub type ExitStatus = i32;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum ProcessStatus {
+    NotDetected,
+    Alive { pid: Pid },
+    Terminated { status: Option<ExitStatus> },
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProcessMonitorState {
+    process_status: ProcessStatus,
     depth: u32,
     logs: VecDeque<String>,
 }
@@ -14,6 +25,7 @@ pub struct ProcessMonitorState {
 impl ProcessMonitorState {
     pub fn new() -> Self {
         Self {
+            process_status: ProcessStatus::NotDetected,
             depth: 128,
             logs: VecDeque::new(),
         }
@@ -42,15 +54,28 @@ impl Flow for ProcessMonitorState {
             ProcessMonitorEvent::ClearLogs => {
                 self.logs.clear();
             }
+            ProcessMonitorEvent::AssignPid { pid } => {
+                self.process_status = ProcessStatus::Alive { pid };
+            }
+            ProcessMonitorEvent::SetExitStatus { status } => {
+                self.process_status = ProcessStatus::Terminated { status };
+            }
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum ProcessMonitorAction {}
+pub enum ProcessMonitorAction {
+    /// This action is available for terminated processes only
+    Respawn,
+    /// This action is available for alive processes only
+    Kill,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ProcessMonitorEvent {
     AddLogs { lines: Vec<String> },
     ClearLogs,
+    AssignPid { pid: Pid },
+    SetExitStatus { status: Option<ExitStatus> },
 }

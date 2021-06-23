@@ -26,4 +26,14 @@ impl ProcessMonitorTracer {
         let msg = ProcessMonitorEvent::ClearLogs;
         self.tracer.send(msg, None, None);
     }
+
+    pub fn assign_pid(&self, pid: Pid) {
+        let msg = ProcessMonitorEvent::AssignPid { pid };
+        self.tracer.send(msg, None, None);
+    }
+
+    pub fn set_exit_status(&self, status: Option<ExitStatus>) {
+        let msg = ProcessMonitorEvent::SetExitStatus { status };
+        self.tracer.send(msg, None, None);
+    }
 }
