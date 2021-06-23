@@ -13,7 +13,7 @@ impl Forwarder {
     pub fn spawn_process(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
         let runner = ProcessRunner {
             tracer: self.tracer.clone(),
-            command: "".into(),
+            command: "cat".into(),
             args: Vec::new(),
         };
         ctx.spawn_task(runner, (), ());

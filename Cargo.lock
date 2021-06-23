@@ -893,6 +893,7 @@ name = "rillrate-agent-protocol"
 version = "0.1.0"
 dependencies = [
  "derive_more",
+ "once_cell",
  "rill-engine",
  "rill-protocol",
  "serde",
