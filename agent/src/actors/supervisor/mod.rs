@@ -1,2 +1,2 @@
 mod actor;
-pub use actor::Supervisor;
+pub use actor::{Supervisor, SupervisorLink};
