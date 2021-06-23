@@ -1,8 +1,10 @@
 use rill_protocol::flow::core::{Flow, TimedEvent};
-//use rill_protocol::flow::location::Location;
+use rill_protocol::flow::location::Location;
 use rill_protocol::io::provider::StreamType;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
+
+pub const LOCATION: Location = Location::new("system:process_monitor");
 
 pub type Pid = u32;
 pub type ExitCode = i32;

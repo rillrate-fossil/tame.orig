@@ -16,9 +16,7 @@ pub struct Forwarder {
 
 impl Forwarder {
     pub fn new(command: Command) -> Self {
-        // TODO: Use a parameter here
-        let path = "my.logs".parse().unwrap();
-        let (tracer, watcher) = ProcessMonitorTracer::new(path, command);
+        let (tracer, watcher) = ProcessMonitorTracer::new(command);
         Self {
             tracer,
             watcher: Some(watcher),
