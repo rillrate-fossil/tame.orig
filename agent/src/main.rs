@@ -10,11 +10,26 @@ async fn main() -> Result<(), Error> {
     let sup = Supervisor::new();
     let addr = System::spawn(sup);
     let mut link: SupervisorLink = addr.link();
-    let command = Command {
-        command: "cat".into(),
-        args: vec!["-n".into()],
-    };
+    let command = extract_command()?;
     link.spawn_command(command).await?;
     System::wait_or_interrupt(addr).await?;
     Ok(())
+}
+
+fn extract_command() -> Result<Command, Error> {
+    let mut input = std::env::args();
+    let mut command = None;
+    let mut args = Vec::new();
+    while let Some(arg) = input.next() {
+        if arg == "--" {
+            command = input.next();
+            args.extend(input);
+            break;
+        }
+    }
+    if let Some(command) = command {
+        Ok(Command { command, args })
+    } else {
+        Err(Error::msg("No command provided"))
+    }
 }
