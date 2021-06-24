@@ -2,6 +2,7 @@ use anyhow::Error;
 use meio::System;
 use rillrate_agent::actors::supervisor::{Supervisor, SupervisorLink};
 use rillrate_agent_protocol::process_monitor::tracer::Command;
+use std::env;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -17,7 +18,9 @@ async fn main() -> Result<(), Error> {
 }
 
 fn extract_command() -> Result<Command, Error> {
-    let mut input = std::env::args();
+    // TODO: Provide an option to set work dir
+    let workdir = env::current_dir()?.as_path().to_string_lossy().to_string();
+    let mut input = env::args();
     let mut command = None;
     let mut args = Vec::new();
     while let Some(arg) = input.next() {
@@ -28,7 +31,11 @@ fn extract_command() -> Result<Command, Error> {
         }
     }
     if let Some(command) = command {
-        Ok(Command { command, args })
+        Ok(Command {
+            command,
+            args,
+            workdir,
+        })
     } else {
         Err(Error::msg("No command provided"))
     }

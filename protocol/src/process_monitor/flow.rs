@@ -13,6 +13,7 @@ pub type ExitCode = i32;
 pub struct Command {
     pub command: String,
     pub args: Vec<String>,
+    pub workdir: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

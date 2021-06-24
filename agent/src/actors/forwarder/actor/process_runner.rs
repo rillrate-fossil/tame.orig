@@ -13,9 +13,14 @@ impl Forwarder {
     pub fn spawn_process(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
         if self.child.is_none() {
             self.tracer.clear_logs();
-            let Command { command, args } = self.command.clone();
+            let Command {
+                command,
+                args,
+                workdir,
+            } = self.command.clone();
             let mut child = TokioCommand::new(command)
                 .args(args)
+                .current_dir(workdir)
                 .stderr(Stdio::piped())
                 .kill_on_drop(true)
                 .spawn()?;
