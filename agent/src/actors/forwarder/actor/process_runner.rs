@@ -3,38 +3,36 @@ use anyhow::Error;
 use async_trait::async_trait;
 use futures::stream::StreamExt;
 use meio::{Context, IdOf, LiteTask, TaskEliminated, TaskError};
-use rillrate_agent_protocol::process_monitor::tracer::ProcessMonitorTracer;
+use rillrate_agent_protocol::process_monitor::tracer::{Command, ProcessMonitorTracer};
 use std::process::{ExitStatus, Stdio};
 use tokio::io::{AsyncBufReadExt, BufReader};
-use tokio::process::Command;
+use tokio::process::Command as TokioCommand;
 use tokio_stream::wrappers::LinesStream;
 
 impl Forwarder {
     pub fn spawn_process(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
-        let runner = ProcessRunner {
+        let runner = LogReader {
             tracer: self.tracer.clone(),
-            command: "cat".into(),
-            args: Vec::new(),
+            command: self.command.clone(),
         };
         ctx.spawn_task(runner, (), ());
         Ok(())
     }
 }
 
-pub struct ProcessRunner {
+pub struct LogReader {
     tracer: ProcessMonitorTracer,
-    command: String,
-    args: Vec<String>,
+    command: Command,
 }
 
 #[async_trait]
-impl LiteTask for ProcessRunner {
+impl LiteTask for LogReader {
     type Output = ExitStatus;
 
     async fn interruptable_routine(self) -> Result<Self::Output, Error> {
         self.tracer.clear_logs();
-        let mut child = Command::new(self.command)
-            .args(self.args)
+        let mut child = TokioCommand::new(self.command.command)
+            .args(self.command.args)
             .stderr(Stdio::piped())
             .kill_on_drop(true)
             .spawn()?;
@@ -54,10 +52,10 @@ impl LiteTask for ProcessRunner {
 }
 
 #[async_trait]
-impl TaskEliminated<ProcessRunner, ()> for Forwarder {
+impl TaskEliminated<LogReader, ()> for Forwarder {
     async fn handle(
         &mut self,
-        _id: IdOf<ProcessRunner>,
+        _id: IdOf<LogReader>,
         _tag: (),
         _res: Result<ExitStatus, TaskError>,
         _ctx: &mut Context<Self>,

@@ -10,14 +10,16 @@ use rillrate_agent_protocol::process_monitor::tracer::{
 };
 
 pub struct Forwarder {
+    command: Command,
     tracer: ProcessMonitorTracer,
     watcher: Option<ProcessMonitorWatcher>,
 }
 
 impl Forwarder {
     pub fn new(command: Command) -> Self {
-        let (tracer, watcher) = ProcessMonitorTracer::new(command);
+        let (tracer, watcher) = ProcessMonitorTracer::new(command.clone());
         Self {
+            command,
             tracer,
             watcher: Some(watcher),
         }

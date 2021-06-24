@@ -12,7 +12,7 @@ async fn main() -> Result<(), Error> {
     let mut link: SupervisorLink = addr.link();
     let command = Command {
         command: "cat".into(),
-        args: Vec::new(),
+        args: vec!["-n".into()],
     };
     link.spawn_command(command).await?;
     System::wait_or_interrupt(addr).await?;
