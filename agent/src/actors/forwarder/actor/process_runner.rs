@@ -77,6 +77,7 @@ impl TaskEliminated<ProcWaiter, ()> for Forwarder {
         res: Result<ExitStatus, TaskError>,
         _ctx: &mut Context<Self>,
     ) -> Result<(), Error> {
+        self.child.take();
         match res {
             Ok(status) => {
                 self.tracer.set_exit_code(status.code());
