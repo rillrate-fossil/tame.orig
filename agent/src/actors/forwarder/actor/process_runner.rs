@@ -2,7 +2,7 @@ use super::Forwarder;
 use anyhow::Error;
 use async_trait::async_trait;
 use futures::stream::StreamExt;
-use meio::{Context, IdOf, LiteTask, TaskEliminated, TaskError};
+use meio::{Context, IdOf, LiteTask, StopReceiver, TaskEliminated, TaskError};
 use rillrate_agent_protocol::process_monitor::tracer::{Command, ProcessMonitorTracer};
 use std::process::{ExitStatus, Stdio};
 use tokio::io::{AsyncBufReadExt, BufReader};
@@ -29,7 +29,9 @@ impl Forwarder {
                 ctx.spawn_task(runner, (), ());
             }
 
-            self.child = Some(child);
+            let killer = ProcWaiter { child };
+            let addr = ctx.spawn_task(killer, (), ());
+            self.child = Some(addr);
 
             Ok(())
         } else {
@@ -37,37 +39,40 @@ impl Forwarder {
         }
     }
 
-    pub fn kill_process(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
-        if let Some(child) = self.child.take() {
-            let killer = ProcKiller { child };
-            ctx.spawn_task(killer, (), ());
+    pub fn kill_process(&mut self) -> Result<(), Error> {
+        if let Some(child) = self.child.as_ref() {
+            child.stop()?;
             Ok(())
         } else {
-            Err(Error::msg("Not implemented"))
+            Err(Error::msg("Not alive process"))
         }
     }
 }
 
-pub struct ProcKiller {
+pub struct ProcWaiter {
     child: Child,
 }
 
 #[async_trait]
-impl LiteTask for ProcKiller {
+impl LiteTask for ProcWaiter {
     type Output = ExitStatus;
-    async fn interruptable_routine(mut self) -> Result<Self::Output, Error> {
-        // TODO: Use alternative ways to interrupt it
-        self.child.kill().await?;
-        let status = self.child.wait().await?;
-        Ok(status)
+    async fn routine(mut self, mut stop: StopReceiver) -> Result<Self::Output, Error> {
+        let res = stop.or(self.child.wait()).await;
+        match res {
+            Ok(exit_status) => Ok(exit_status?),
+            Err(err) => {
+                self.child.kill().await?;
+                Err(err.into())
+            }
+        }
     }
 }
 
 #[async_trait]
-impl TaskEliminated<ProcKiller, ()> for Forwarder {
+impl TaskEliminated<ProcWaiter, ()> for Forwarder {
     async fn handle(
         &mut self,
-        _id: IdOf<ProcKiller>,
+        _id: IdOf<ProcWaiter>,
         _tag: (),
         res: Result<ExitStatus, TaskError>,
         _ctx: &mut Context<Self>,

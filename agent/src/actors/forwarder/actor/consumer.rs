@@ -32,7 +32,7 @@ impl Consumer<Result<ActionEnvelope<ProcessMonitorState>, BroadcastStreamRecvErr
             Activity::Connected => {}
             Activity::Action(action) => match action {
                 ProcessMonitorAction::Kill => {
-                    self.kill_process(ctx)?;
+                    self.kill_process()?;
                 }
                 ProcessMonitorAction::Respawn => {
                     self.spawn_process(ctx)?;

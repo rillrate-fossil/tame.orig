@@ -4,17 +4,17 @@ mod process_runner;
 use crate::actors::supervisor::Supervisor;
 use anyhow::Error;
 use async_trait::async_trait;
-use meio::{Actor, Context, InterruptedBy, StartedBy};
+use meio::{Actor, Context, InterruptedBy, StartedBy, TaskAddress};
+use process_runner::ProcWaiter;
 use rillrate_agent_protocol::process_monitor::tracer::{
     Command, ProcessMonitorTracer, ProcessMonitorWatcher,
 };
-use tokio::process::Child;
 
 pub struct Forwarder {
     command: Command,
     tracer: ProcessMonitorTracer,
     watcher: Option<ProcessMonitorWatcher>,
-    child: Option<Child>,
+    child: Option<TaskAddress<ProcWaiter>>,
 }
 
 impl Forwarder {
