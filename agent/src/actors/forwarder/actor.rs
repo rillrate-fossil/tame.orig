@@ -8,11 +8,13 @@ use meio::{Actor, Context, InterruptedBy, StartedBy};
 use rillrate_agent_protocol::process_monitor::tracer::{
     Command, ProcessMonitorTracer, ProcessMonitorWatcher,
 };
+use tokio::process::Child;
 
 pub struct Forwarder {
     command: Command,
     tracer: ProcessMonitorTracer,
     watcher: Option<ProcessMonitorWatcher>,
+    child: Option<Child>,
 }
 
 impl Forwarder {
@@ -22,6 +24,7 @@ impl Forwarder {
             command,
             tracer,
             watcher: Some(watcher),
+            child: None,
         }
     }
 }

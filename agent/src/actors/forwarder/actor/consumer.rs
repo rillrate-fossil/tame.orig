@@ -3,7 +3,7 @@ use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Consumer, Context};
 use rill_protocol::flow::core::{ActionEnvelope, Activity};
-use rillrate_agent_protocol::process_monitor::tracer::ProcessMonitorState;
+use rillrate_agent_protocol::process_monitor::tracer::{ProcessMonitorAction, ProcessMonitorState};
 use thiserror::Error;
 use tokio_stream::wrappers::{errors::BroadcastStreamRecvError, BroadcastStream};
 
@@ -25,12 +25,19 @@ impl Consumer<Result<ActionEnvelope<ProcessMonitorState>, BroadcastStreamRecvErr
     async fn handle(
         &mut self,
         event: Result<ActionEnvelope<ProcessMonitorState>, BroadcastStreamRecvError>,
-        _ctx: &mut Context<Self>,
+        ctx: &mut Context<Self>,
     ) -> Result<(), Error> {
         let envelope = event?;
         match envelope.activity {
             Activity::Connected => {}
-            Activity::Action(action) => {}
+            Activity::Action(action) => match action {
+                ProcessMonitorAction::Kill => {
+                    self.kill_process(ctx)?;
+                }
+                ProcessMonitorAction::Respawn => {
+                    self.spawn_process(ctx)?;
+                }
+            },
             Activity::Disconnected => {}
         }
         Ok(())
