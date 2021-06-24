@@ -37,7 +37,7 @@ impl Actor for Forwarder {
 impl StartedBy<Supervisor> for Forwarder {
     async fn handle(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
         self.listen_to_actions(ctx)?;
-        self.spawn_process(ctx)?;
+        self.spawn_process(ctx);
         Ok(())
     }
 }

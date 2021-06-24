@@ -35,7 +35,7 @@ impl Consumer<Result<ActionEnvelope<ProcessMonitorState>, BroadcastStreamRecvErr
                     self.kill_process()?;
                 }
                 ProcessMonitorAction::Respawn => {
-                    self.spawn_process(ctx)?;
+                    self.spawn_process(ctx);
                 }
             },
             Activity::Disconnected => {}

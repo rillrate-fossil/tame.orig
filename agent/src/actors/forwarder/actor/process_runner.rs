@@ -10,7 +10,7 @@ use tokio::process::{Child, ChildStderr, Command as TokioCommand};
 use tokio_stream::wrappers::LinesStream;
 
 impl Forwarder {
-    pub fn spawn_process(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
+    pub fn spawn_process(&mut self, ctx: &mut Context<Self>) {
         if self.child.is_none() {
             self.tracer.clear_logs();
             let Command {
@@ -18,29 +18,35 @@ impl Forwarder {
                 args,
                 workdir,
             } = self.command.clone();
-            let mut child = TokioCommand::new(command)
+            let child = TokioCommand::new(command)
                 .args(args)
                 .current_dir(workdir)
                 .stderr(Stdio::piped())
                 .kill_on_drop(true)
-                .spawn()?;
-            self.tracer.assign_pid(child.id());
+                .spawn();
+            match child {
+                Ok(mut child) => {
+                    self.tracer.assign_pid(child.id());
 
-            if let Some(stderr) = child.stderr.take() {
-                let runner = LogReader {
-                    tracer: self.tracer.clone(),
-                    stderr,
-                };
-                ctx.spawn_task(runner, (), ());
+                    if let Some(stderr) = child.stderr.take() {
+                        let runner = LogReader {
+                            tracer: self.tracer.clone(),
+                            stderr,
+                        };
+                        ctx.spawn_task(runner, (), ());
+                    }
+
+                    let killer = ProcWaiter { child };
+                    let addr = ctx.spawn_task(killer, (), ());
+                    self.child = Some(addr);
+                }
+                Err(err) => {
+                    log::error!("Can't spawn a process: {}", err);
+                    self.tracer.set_exit_code(None);
+                }
             }
-
-            let killer = ProcWaiter { child };
-            let addr = ctx.spawn_task(killer, (), ());
-            self.child = Some(addr);
-
-            Ok(())
         } else {
-            Err(Error::msg("Already spawned"))
+            log::error!("Attempt to spawn process twice");
         }
     }
 
