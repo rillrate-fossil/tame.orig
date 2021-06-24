@@ -72,9 +72,16 @@ impl TaskEliminated<ProcKiller, ()> for Forwarder {
         res: Result<ExitStatus, TaskError>,
         _ctx: &mut Context<Self>,
     ) -> Result<(), Error> {
-        let status = res.as_ref().ok().and_then(ExitStatus::code);
-        self.tracer.set_exit_code(status);
-        res.map(drop).map_err(Error::from)
+        match res {
+            Ok(status) => {
+                self.tracer.set_exit_code(status.code());
+                Ok(())
+            }
+            Err(err) => {
+                self.tracer.set_exit_code(None);
+                Err(err.into())
+            }
+        }
     }
 }
 
