@@ -22,7 +22,7 @@ pub struct Forwarder {
 impl Forwarder {
     pub fn new(command: Command) -> Self {
         let (process_tracer, process_watcher) = ProcessMonitorTracer::new(command.clone());
-        let (log_tracer, log_watcher) = LogFlowTracer::new();
+        let (log_tracer, _log_watcher) = LogFlowTracer::new();
         Self {
             command,
             process_tracer,
