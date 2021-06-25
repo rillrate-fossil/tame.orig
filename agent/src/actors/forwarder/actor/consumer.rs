@@ -3,7 +3,7 @@ use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Consumer, Context};
 use rill_protocol::flow::core::{ActionEnvelope, Activity};
-use rillrate_agent_protocol::process_monitor::{ProcessMonitorAction, ProcessMonitorState};
+use tame_protocol::process_monitor::{ProcessMonitorAction, ProcessMonitorState};
 use thiserror::Error;
 use tokio_stream::wrappers::{errors::BroadcastStreamRecvError, BroadcastStream};
 

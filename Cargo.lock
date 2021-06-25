@@ -941,37 +941,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rillrate-agent"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "clap",
- "derive_more",
- "env_logger",
- "futures",
- "log",
- "meio",
- "rill-engine",
- "rill-protocol",
- "rillrate-agent-protocol",
- "thiserror",
- "tokio",
- "tokio-stream",
-]
-
-[[package]]
-name = "rillrate-agent-protocol"
-version = "0.1.0"
-dependencies = [
- "derive_more",
- "once_cell",
- "rill-engine",
- "rill-protocol",
- "serde",
-]
-
-[[package]]
 name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1068,6 +1037,41 @@ dependencies = [
  "quote",
  "unicode-xid",
 ]
+
+[[package]]
+name = "tame"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "clap",
+ "derive_more",
+ "env_logger",
+ "futures",
+ "log",
+ "meio",
+ "rill-engine",
+ "rill-protocol",
+ "tame-protocol",
+ "thiserror",
+ "tokio",
+ "tokio-stream",
+]
+
+[[package]]
+name = "tame-protocol"
+version = "0.1.0"
+dependencies = [
+ "derive_more",
+ "once_cell",
+ "rill-engine",
+ "rill-protocol",
+ "serde",
+]
+
+[[package]]
+name = "tamed"
+version = "0.1.0"
 
 [[package]]
 name = "termcolor"

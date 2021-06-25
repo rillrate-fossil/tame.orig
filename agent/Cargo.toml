@@ -1,5 +1,5 @@
 [package]
-name = "rillrate-agent"
+name = "tame"
 version = "0.1.0"
 authors = ["Denis Kolodin <deniskolodin@gmail.com>"]
 edition = "2018"
@@ -23,7 +23,7 @@ log = "0.4.14"
 meio = "0.89.4"
 rill-engine = "0.30.0-alpha.7"
 rill-protocol = "0.30.0-alpha.7"
-rillrate-agent-protocol = { version = "0.1.0", path = "../protocol" }
+tame-protocol = { version = "0.1.0", path = "../protocol" }
 thiserror = "1.0.25"
 tokio = "1.7.1"
 tokio-stream = { version = "0.1.6", features = ["sync", "io-util"] }

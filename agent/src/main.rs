@@ -5,10 +5,10 @@ use clap::Clap;
 use meio::System;
 use rill_engine::EngineConfig;
 use rill_protocol::io::provider::EntryId;
-use rillrate_agent::actors::supervisor::{Supervisor, SupervisorLink};
-use rillrate_agent_protocol::process_monitor::Command;
-use rillrate_agent_protocol::provider_type;
 use std::env;
+use tame::actors::supervisor::{Supervisor, SupervisorLink};
+use tame_protocol::process_monitor::Command;
+use tame_protocol::provider_type;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {

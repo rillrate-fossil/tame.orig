@@ -1,10 +1,10 @@
 [package]
-name = "rillrate-agent-protocol"
+name = "tame-protocol"
 version = "0.1.0"
 edition = "2018"
-repository = "https://github.com/rillrate/agent"
-homepage = "https://github.com/rillrate/agent"
-documentation = "https://docs.rs/rillrate-agent-protocol/"
+repository = "https://github.com/rillrate/tame"
+homepage = "https://github.com/rillrate/tame"
+documentation = "https://docs.rs/tame-protocol/"
 license = "Apache-2.0"
 readme = "README.md"
 keywords = ["logging"]
@@ -14,8 +14,8 @@ description = "RillRate Agent"
 [dependencies]
 derive_more = "0.99.14"
 once_cell = "1.8.0"
-rill-engine = { version = "0.30.0-alpha.6", optional = true }
-rill-protocol = "0.30.0-alpha.6"
+rill-engine = { version = "0.30.0-alpha.7", optional = true }
+rill-protocol = "0.30.0-alpha.7"
 serde = "1.0.126"
 
 [features]
