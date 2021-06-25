@@ -2,12 +2,11 @@ use super::{Group, Supervisor};
 use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Context, Eliminated, IdOf};
-use rill_engine::{EngineConfig, RillEngine};
-use rillrate_agent_protocol::provider_type;
+use rill_engine::RillEngine;
 
 impl Supervisor {
     pub fn spawn_engine(&mut self, ctx: &mut Context<Self>) {
-        let engine = RillEngine::new(EngineConfig::new(provider_type()));
+        let engine = RillEngine::new(self.config.clone());
         ctx.spawn_actor(engine, Group::Engine);
     }
 }

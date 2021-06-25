@@ -1,14 +1,17 @@
 use anyhow::Error;
 use meio::System;
+use rill_engine::EngineConfig;
 use rillrate_agent::actors::supervisor::{Supervisor, SupervisorLink};
 use rillrate_agent_protocol::process_monitor::tracer::Command;
+use rillrate_agent_protocol::provider_type;
 use std::env;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     env_logger::try_init()?;
     log::info!("Starting RillRate Agent...");
-    let sup = Supervisor::new();
+    let config = EngineConfig::new(provider_type());
+    let sup = Supervisor::new(config);
     let addr = System::spawn(sup);
     let mut link: SupervisorLink = addr.link();
     let command = extract_command()?;

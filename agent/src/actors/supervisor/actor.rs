@@ -5,17 +5,20 @@ use anyhow::Error;
 use async_trait::async_trait;
 use derive_more::From;
 use meio::{Actor, Address, Context, InterruptedBy, StartedBy, System};
+use rill_engine::EngineConfig;
 
 #[derive(Debug, Clone, From)]
 pub struct SupervisorLink {
     address: Address<Supervisor>,
 }
 
-pub struct Supervisor {}
+pub struct Supervisor {
+    config: EngineConfig,
+}
 
 impl Supervisor {
-    pub fn new() -> Self {
-        Self {}
+    pub fn new(config: EngineConfig) -> Self {
+        Self { config }
     }
 }
 
