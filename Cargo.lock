@@ -1040,7 +1040,7 @@ dependencies = [
 
 [[package]]
 name = "tame"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1060,7 +1060,7 @@ dependencies = [
 
 [[package]]
 name = "tame-protocol"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "derive_more",
  "once_cell",
@@ -1071,7 +1071,7 @@ dependencies = [
 
 [[package]]
 name = "tamed"
-version = "0.1.0"
+version = "0.2.0"
 
 [[package]]
 name = "termcolor"
