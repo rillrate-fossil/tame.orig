@@ -9,15 +9,46 @@ use std::env;
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     env_logger::try_init()?;
+    let command = extract_command()?;
     log::info!("Starting RillRate Agent...");
-    let config = EngineConfig::new(provider_type());
+    let mut config = EngineConfig::new(provider_type());
+    config.name = Some(smart_name(&command.command).into());
     let sup = Supervisor::new(config);
     let addr = System::spawn(sup);
     let mut link: SupervisorLink = addr.link();
-    let command = extract_command()?;
     link.spawn_command(command).await?;
     System::wait_or_interrupt(addr).await?;
     Ok(())
+}
+
+fn smart_name(name: &str) -> String {
+    enum State {
+        WaitAlpha,
+        TakeAlphas,
+    }
+    let mut state = State::WaitAlpha;
+    let mut s = String::new();
+    for c in name.chars() {
+        match state {
+            State::WaitAlpha => {
+                if c.is_alphanumeric() {
+                    if !s.is_empty() {
+                        s.push('-');
+                    }
+                    s.push(c);
+                    state = State::TakeAlphas;
+                }
+            }
+            State::TakeAlphas => {
+                if c.is_alphanumeric() {
+                    s.push(c);
+                } else {
+                    state = State::WaitAlpha;
+                }
+            }
+        }
+    }
+    s
 }
 
 fn extract_command() -> Result<Command, Error> {
