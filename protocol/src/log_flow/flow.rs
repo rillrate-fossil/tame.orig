@@ -16,7 +16,7 @@ pub struct LogFlowState {
 impl LogFlowState {
     pub fn new() -> Self {
         Self {
-            depth: 128,
+            depth: 20,
             logs: VecDeque::new(),
         }
     }
