@@ -7,13 +7,13 @@ use std::collections::VecDeque;
 pub const LOCATION: Location = Location::new("system:log_flow");
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LogFlow {
+pub struct LogFlowState {
     pub depth: u32,
     pub logs: VecDeque<String>,
 }
 
 #[allow(clippy::new_without_default)]
-impl LogFlow {
+impl LogFlowState {
     pub fn new() -> Self {
         Self {
             depth: 128,
@@ -22,7 +22,7 @@ impl LogFlow {
     }
 }
 
-impl Flow for LogFlow {
+impl Flow for LogFlowState {
     type Action = LogFlowAction;
     type Event = LogFlowEvent;
 
