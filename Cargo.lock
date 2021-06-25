@@ -902,9 +902,9 @@ checksum = "f497285884f3fcff424ffc933e56d7cbca511def0c9831a7f9b5f6153e3cc89b"
 
 [[package]]
 name = "rill-engine"
-version = "0.30.0-alpha.7"
+version = "0.31.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b1739eea029ae2c96dbb1d983f25c24408090f6a3baedcfc855258b5f228055"
+checksum = "eff9996151cd99af246f5d24f453ec8b304211a88c50c449ba099ef96111be0e"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -923,9 +923,9 @@ dependencies = [
 
 [[package]]
 name = "rill-protocol"
-version = "0.30.0-alpha.7"
+version = "0.31.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8594989524cd7b8417810e9a6b3e3f680f08ab29c42a56f5b0d78b0fb6c67ca9"
+checksum = "2a8e1b327912cdfa459e0aa5d447c658effe19df96ebe48fa2100d6e7f6468b0"
 dependencies = [
  "anyhow",
  "derive_more",
