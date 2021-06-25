@@ -6,24 +6,28 @@ use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Actor, Context, InterruptedBy, StartedBy, TaskAddress};
 use process_runner::ProcWaiter;
-use rillrate_agent_protocol::process_monitor::tracer::{
+use rillrate_agent_protocol::log_flow::LogFlowTracer;
+use rillrate_agent_protocol::process_monitor::{
     Command, ProcessMonitorTracer, ProcessMonitorWatcher,
 };
 
 pub struct Forwarder {
     command: Command,
-    tracer: ProcessMonitorTracer,
-    watcher: Option<ProcessMonitorWatcher>,
+    process_tracer: ProcessMonitorTracer,
+    process_watcher: Option<ProcessMonitorWatcher>,
+    log_tracer: LogFlowTracer,
     child: Option<TaskAddress<ProcWaiter>>,
 }
 
 impl Forwarder {
     pub fn new(command: Command) -> Self {
-        let (tracer, watcher) = ProcessMonitorTracer::new(command.clone());
+        let (process_tracer, process_watcher) = ProcessMonitorTracer::new(command.clone());
+        let (log_tracer, log_watcher) = LogFlowTracer::new();
         Self {
             command,
-            tracer,
-            watcher: Some(watcher),
+            process_tracer,
+            process_watcher: Some(process_watcher),
+            log_tracer,
             child: None,
         }
     }

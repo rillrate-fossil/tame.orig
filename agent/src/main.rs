@@ -6,7 +6,7 @@ use meio::System;
 use rill_engine::EngineConfig;
 use rill_protocol::io::provider::EntryId;
 use rillrate_agent::actors::supervisor::{Supervisor, SupervisorLink};
-use rillrate_agent_protocol::process_monitor::tracer::Command;
+use rillrate_agent_protocol::process_monitor::Command;
 use rillrate_agent_protocol::provider_type;
 use std::env;
 

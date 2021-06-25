@@ -16,16 +16,6 @@ impl ProcessMonitorTracer {
         (Self { tracer }, watcher)
     }
 
-    pub fn add_logs(&self, lines: Vec<String>) {
-        let msg = ProcessMonitorEvent::AddLogs { lines };
-        self.tracer.send(msg, None, None);
-    }
-
-    pub fn clear_logs(&self) {
-        let msg = ProcessMonitorEvent::ClearLogs;
-        self.tracer.send(msg, None, None);
-    }
-
     pub fn assign_pid(&self, pid: Option<Pid>) {
         let msg = ProcessMonitorEvent::AssignPid { pid };
         self.tracer.send(msg, None, None);

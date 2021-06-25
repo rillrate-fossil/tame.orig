@@ -3,7 +3,8 @@ use anyhow::Error;
 use async_trait::async_trait;
 use futures::stream::StreamExt;
 use meio::{Context, IdOf, LiteTask, StopReceiver, TaskEliminated, TaskError};
-use rillrate_agent_protocol::process_monitor::tracer::{Command, ProcessMonitorTracer};
+use rillrate_agent_protocol::log_flow::LogFlowTracer;
+use rillrate_agent_protocol::process_monitor::Command;
 use std::process::{ExitStatus, Stdio};
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::{Child, ChildStderr, Command as TokioCommand};
@@ -12,7 +13,7 @@ use tokio_stream::wrappers::LinesStream;
 impl Forwarder {
     pub fn spawn_process(&mut self, ctx: &mut Context<Self>) {
         if self.child.is_none() {
-            self.tracer.clear_logs();
+            self.log_tracer.clear_logs();
             let Command {
                 command,
                 args,
@@ -26,11 +27,11 @@ impl Forwarder {
                 .spawn();
             match child {
                 Ok(mut child) => {
-                    self.tracer.assign_pid(child.id());
+                    self.process_tracer.assign_pid(child.id());
 
                     if let Some(stderr) = child.stderr.take() {
                         let runner = LogReader {
-                            tracer: self.tracer.clone(),
+                            log_tracer: self.log_tracer.clone(),
                             stderr,
                         };
                         ctx.spawn_task(runner, (), ());
@@ -42,7 +43,7 @@ impl Forwarder {
                 }
                 Err(err) => {
                     log::error!("Can't spawn a process: {}", err);
-                    self.tracer.set_exit_code(None);
+                    self.process_tracer.set_exit_code(None);
                 }
             }
         } else {
@@ -91,11 +92,11 @@ impl TaskEliminated<ProcWaiter, ()> for Forwarder {
         self.child.take();
         match res {
             Ok(status) => {
-                self.tracer.set_exit_code(status.code());
+                self.process_tracer.set_exit_code(status.code());
                 Ok(())
             }
             Err(err) => {
-                self.tracer.set_exit_code(None);
+                self.process_tracer.set_exit_code(None);
                 Err(err.into())
             }
         }
@@ -103,7 +104,7 @@ impl TaskEliminated<ProcWaiter, ()> for Forwarder {
 }
 
 pub struct LogReader {
-    tracer: ProcessMonitorTracer,
+    log_tracer: LogFlowTracer,
     stderr: ChildStderr,
 }
 
@@ -116,7 +117,7 @@ impl LiteTask for LogReader {
         let mut chunks = LinesStream::new(lines).ready_chunks(64);
         while let Some(lines) = chunks.next().await {
             let res: Result<Vec<_>, _> = lines.into_iter().collect();
-            self.tracer.add_logs(res?);
+            self.log_tracer.add_logs(res?);
         }
         Ok(())
     }

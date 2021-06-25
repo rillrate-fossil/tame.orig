@@ -3,7 +3,7 @@ use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Consumer, Context};
 use rill_protocol::flow::core::{ActionEnvelope, Activity};
-use rillrate_agent_protocol::process_monitor::tracer::{ProcessMonitorAction, ProcessMonitorState};
+use rillrate_agent_protocol::process_monitor::{ProcessMonitorAction, ProcessMonitorState};
 use thiserror::Error;
 use tokio_stream::wrappers::{errors::BroadcastStreamRecvError, BroadcastStream};
 
@@ -13,7 +13,7 @@ struct AlreadyTaken;
 
 impl Forwarder {
     pub fn listen_to_actions(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
-        let rx = self.watcher.take().ok_or(AlreadyTaken)?;
+        let rx = self.process_watcher.take().ok_or(AlreadyTaken)?;
         let stream = BroadcastStream::new(rx);
         ctx.attach(stream, (), ());
         Ok(())

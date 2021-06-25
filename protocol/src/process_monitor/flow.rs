@@ -2,7 +2,6 @@ use rill_protocol::flow::core::{Flow, TimedEvent};
 use rill_protocol::flow::location::Location;
 use rill_protocol::io::provider::StreamType;
 use serde::{Deserialize, Serialize};
-use std::collections::VecDeque;
 
 pub const LOCATION: Location = Location::new("system:process_monitor");
 
@@ -27,8 +26,6 @@ pub enum ProcessStatus {
 pub struct ProcessMonitorState {
     pub command: Command,
     pub process_status: ProcessStatus,
-    pub depth: u32,
-    pub logs: VecDeque<String>,
 }
 
 #[allow(clippy::new_without_default)]
@@ -37,8 +34,6 @@ impl ProcessMonitorState {
         Self {
             command,
             process_status: ProcessStatus::NotDetected,
-            depth: 128,
-            logs: VecDeque::new(),
         }
     }
 }
@@ -53,18 +48,6 @@ impl Flow for ProcessMonitorState {
 
     fn apply(&mut self, event: TimedEvent<Self::Event>) {
         match event.event {
-            ProcessMonitorEvent::AddLogs { lines } => {
-                self.logs.extend(lines.into_iter());
-                let len = self.logs.len();
-                let depth = self.depth as usize;
-                if len > depth {
-                    let diff = len - depth;
-                    drop(self.logs.drain(0..diff));
-                }
-            }
-            ProcessMonitorEvent::ClearLogs => {
-                self.logs.clear();
-            }
             ProcessMonitorEvent::AssignPid { pid } => {
                 self.process_status = ProcessStatus::Alive { pid };
             }
@@ -85,8 +68,6 @@ pub enum ProcessMonitorAction {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ProcessMonitorEvent {
-    AddLogs { lines: Vec<String> },
-    ClearLogs,
     AssignPid { pid: Option<Pid> },
     SetExitCode { code: Option<ExitCode> },
 }
