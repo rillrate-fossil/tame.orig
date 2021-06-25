@@ -7,4 +7,5 @@ pub fn provider_type() -> StreamType {
 
 pub const TYPE: Lazy<StreamType> = Lazy::new(provider_type);
 
+pub mod log_flow;
 pub mod process_monitor;
