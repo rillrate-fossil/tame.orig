@@ -7,13 +7,14 @@ use tame_protocol::process_monitor::Command;
 
 pub struct SpawnCommand {
     command: Command,
+    manual: bool,
 }
 
 impl Action for SpawnCommand {}
 
 impl SupervisorLink {
-    pub async fn spawn_command(&mut self, command: Command) -> Result<(), Error> {
-        let msg = SpawnCommand { command };
+    pub async fn spawn_command(&mut self, command: Command, manual: bool) -> Result<(), Error> {
+        let msg = SpawnCommand { command, manual };
         self.address.act(msg).await
     }
 }
@@ -21,7 +22,7 @@ impl SupervisorLink {
 #[async_trait]
 impl ActionHandler<SpawnCommand> for Supervisor {
     async fn handle(&mut self, msg: SpawnCommand, ctx: &mut Context<Self>) -> Result<(), Error> {
-        let worker = Forwarder::new(msg.command);
+        let worker = Forwarder::new(msg.command, msg.manual);
         ctx.spawn_actor(worker, Group::Workers);
         Ok(())
     }

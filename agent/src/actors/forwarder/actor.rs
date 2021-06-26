@@ -11,6 +11,7 @@ use tame_protocol::process_monitor::{Command, ProcessMonitorTracer, ProcessMonit
 
 pub struct Forwarder {
     command: Command,
+    manual: bool,
     process_tracer: ProcessMonitorTracer,
     process_watcher: Option<ProcessMonitorWatcher>,
     log_tracer: LogFlowTracer,
@@ -18,11 +19,12 @@ pub struct Forwarder {
 }
 
 impl Forwarder {
-    pub fn new(command: Command) -> Self {
+    pub fn new(command: Command, manual: bool) -> Self {
         let (process_tracer, process_watcher) = ProcessMonitorTracer::new(command.clone());
         let (log_tracer, _log_watcher) = LogFlowTracer::new();
         Self {
             command,
+            manual,
             process_tracer,
             process_watcher: Some(process_watcher),
             log_tracer,
@@ -39,7 +41,9 @@ impl Actor for Forwarder {
 impl StartedBy<Supervisor> for Forwarder {
     async fn handle(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
         self.listen_to_actions(ctx)?;
-        self.spawn_process(ctx);
+        if !self.manual {
+            self.spawn_process(ctx);
+        }
         Ok(())
     }
 }

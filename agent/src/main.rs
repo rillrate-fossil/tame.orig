@@ -25,7 +25,7 @@ async fn main() -> Result<(), Error> {
     let sup = Supervisor::new(config);
     let addr = System::spawn(sup);
     let mut link: SupervisorLink = addr.link();
-    link.spawn_command(command).await?;
+    link.spawn_command(command, opts.no_spawn).await?;
     System::wait_or_interrupt(addr).await?;
     Ok(())
 }
