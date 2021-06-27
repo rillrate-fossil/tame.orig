@@ -3,6 +3,7 @@ mod opts;
 use anyhow::Error;
 use clap::Clap;
 use meio::System;
+use opts::{Opts, SubCommand};
 use rill_engine::EngineConfig;
 use rill_protocol::io::provider::EntryId;
 use std::env;
@@ -12,21 +13,25 @@ use tame_protocol::cmd::provider_type;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    let opts = opts::Opts::parse();
+    let opts = Opts::parse();
     env_logger::try_init()?;
-    let command = extract_command(opts.command)?;
     log::info!("Starting RillRate Agent...");
-    let mut config = EngineConfig::new(provider_type());
-    if let Some(name) = opts.name {
-        config.name = Some(name);
-    } else {
-        config.name = Some(smart_name(&command.command));
+    match opts.subcmd {
+        SubCommand::Cmd(cmd) => {
+            let command = extract_command(cmd.command)?;
+            let mut config = EngineConfig::new(provider_type());
+            if let Some(name) = opts.name {
+                config.name = Some(name);
+            } else {
+                config.name = Some(smart_name(&command.command));
+            }
+            let sup = Supervisor::new(config);
+            let addr = System::spawn(sup);
+            let mut link: SupervisorLink = addr.link();
+            link.spawn_command(command, cmd.no_spawn).await?;
+            System::wait_or_interrupt(addr).await?;
+        }
     }
-    let sup = Supervisor::new(config);
-    let addr = System::spawn(sup);
-    let mut link: SupervisorLink = addr.link();
-    link.spawn_command(command, opts.no_spawn).await?;
-    System::wait_or_interrupt(addr).await?;
     Ok(())
 }
 
