@@ -41,7 +41,7 @@ impl LiteTask for ProcessTracker {
     }
 
     fn retry_delay(&self, _last_attempt: Instant, _succeed: bool) -> Duration {
-        Duration::from_millis(1_000)
+        Duration::from_millis(3_000)
     }
 }
 
