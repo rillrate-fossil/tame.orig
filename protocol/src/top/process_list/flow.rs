@@ -12,6 +12,7 @@ pub type Pid = i32;
 pub struct ProcessRecord {
     /// Name of a process.
     pub name: String,
+    pub pid: Pid,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -52,6 +53,7 @@ pub enum ProcessListAction {}
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ProcessListEvent {
     UpdateSnapshot {
+        #[serde(with = "vectorize")]
         snapshot: HashMap<Pid, ProcessRecord>,
     },
 }

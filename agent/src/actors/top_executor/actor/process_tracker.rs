@@ -3,6 +3,7 @@ use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Context, IdOf, LiteTask, TaskEliminated, TaskError};
 use std::collections::HashMap;
+use std::time::{Duration, Instant};
 use sysinfo::{ProcessExt, System, SystemExt};
 use tame_protocol::top::process_list::{ProcessListTracer, ProcessRecord};
 
@@ -30,11 +31,16 @@ impl LiteTask for ProcessTracker {
         for (pid, proc) in self.system.get_processes().iter().take(20) {
             let info = ProcessRecord {
                 name: proc.name().to_string(),
+                pid: *pid,
             };
             snapshot.insert(*pid, info);
         }
         self.process_tracer.snapshot(snapshot.clone());
         Ok(None)
+    }
+
+    fn retry_delay(&self, _last_attempt: Instant, _succeed: bool) -> Duration {
+        Duration::from_millis(1_000)
     }
 }
 
