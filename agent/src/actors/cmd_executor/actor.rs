@@ -42,7 +42,7 @@ impl Executor for CmdExecutor {}
 #[async_trait]
 impl StartedBy<Supervisor> for CmdExecutor {
     async fn handle(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
-        self.listen_to_actions(ctx)?;
+        self.consumer(ctx)?;
         if !self.manual {
             self.spawn_process(ctx);
         }
