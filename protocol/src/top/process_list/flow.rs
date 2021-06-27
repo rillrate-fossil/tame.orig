@@ -13,7 +13,7 @@ pub struct ProcessRecord {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProcessListState {
-    snapshot: Option<Vec<ProcessRecord>>,
+    pub snapshot: Option<Vec<ProcessRecord>>,
 }
 
 #[allow(clippy::new_without_default)]
