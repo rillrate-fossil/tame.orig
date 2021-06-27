@@ -2,6 +2,7 @@ pub use super::flow::*;
 use derive_more::{Deref, DerefMut};
 use rill_engine::tracers::tracer::{Tracer, Watcher};
 use rill_protocol::io::provider::ProviderReqId;
+use std::collections::HashMap;
 
 pub type ProcessListWatcher = Watcher<ProcessListState>;
 
@@ -17,9 +18,8 @@ impl ProcessListTracer {
         (Self { tracer }, watcher)
     }
 
-    pub fn snapshot(&self, snapshot: Vec<ProcessRecord>, direct_id: ProviderReqId) {
-        let msg = ProcessListEvent::Snapshot { snapshot };
-        // TODO: Support multicast by `Direction`
-        self.tracer.send(msg, None, Some(direct_id.into()));
+    pub fn snapshot(&self, snapshot: HashMap<Pid, ProcessRecord>) {
+        let msg = ProcessListEvent::UpdateSnapshot { snapshot };
+        self.tracer.send(msg, None, None);
     }
 }

@@ -2,8 +2,11 @@ use rill_protocol::flow::core::{Flow, TimedEvent};
 use rill_protocol::flow::location::Location;
 use rill_protocol::io::provider::StreamType;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 pub const LOCATION: Location = Location::new("system:process_list");
+
+pub type Pid = i32;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProcessRecord {
@@ -13,13 +16,15 @@ pub struct ProcessRecord {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProcessListState {
-    pub snapshot: Option<Vec<ProcessRecord>>,
+    pub snapshot: HashMap<Pid, ProcessRecord>,
 }
 
 #[allow(clippy::new_without_default)]
 impl ProcessListState {
     pub fn new() -> Self {
-        Self { snapshot: None }
+        Self {
+            snapshot: HashMap::new(),
+        }
     }
 }
 
@@ -33,8 +38,8 @@ impl Flow for ProcessListState {
 
     fn apply(&mut self, event: TimedEvent<Self::Event>) {
         match event.event {
-            ProcessListEvent::Snapshot { snapshot } => {
-                self.snapshot = Some(snapshot);
+            ProcessListEvent::UpdateSnapshot { snapshot } => {
+                self.snapshot = snapshot;
             }
         }
     }
@@ -45,5 +50,7 @@ pub enum ProcessListAction {}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ProcessListEvent {
-    Snapshot { snapshot: Vec<ProcessRecord> },
+    UpdateSnapshot {
+        snapshot: HashMap<Pid, ProcessRecord>,
+    },
 }

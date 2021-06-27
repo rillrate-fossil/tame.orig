@@ -2,13 +2,13 @@ use super::{ListenersMap, TopExecutor};
 use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Context, IdOf, LiteTask, TaskEliminated, TaskError};
+use std::collections::HashMap;
 use sysinfo::{ProcessExt, System, SystemExt};
 use tame_protocol::top::process_list::{ProcessListTracer, ProcessRecord};
 
 impl TopExecutor {
     pub fn spawn_tracker(&mut self, ctx: &mut Context<Self>) {
         let tracker = ProcessTracker {
-            listeners: self.listeners.clone(),
             process_tracer: self.process_tracer.clone(),
             system: System::new_all(),
         };
@@ -17,7 +17,6 @@ impl TopExecutor {
 }
 
 pub struct ProcessTracker {
-    listeners: ListenersMap,
     process_tracer: ProcessListTracer,
     system: System,
 }
@@ -27,17 +26,14 @@ impl LiteTask for ProcessTracker {
     type Output = ();
     async fn repeatable_routine(&mut self) -> Result<Option<Self::Output>, Error> {
         self.system.refresh_all();
-        let mut snapshot = Vec::new();
+        let mut snapshot = HashMap::new();
         for (pid, proc) in self.system.get_processes().iter().take(20) {
             let info = ProcessRecord {
                 name: proc.name().to_string(),
             };
-            snapshot.push(info);
+            snapshot.insert(*pid, info);
         }
-        let listeners: Vec<_> = self.listeners.lock().await.keys().cloned().collect();
-        for direct_id in listeners {
-            self.process_tracer.snapshot(snapshot.clone(), direct_id);
-        }
+        self.process_tracer.snapshot(snapshot.clone());
         Ok(None)
     }
 }
