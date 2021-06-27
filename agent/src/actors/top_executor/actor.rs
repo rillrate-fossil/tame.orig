@@ -11,8 +11,10 @@ use std::sync::Arc;
 use tame_protocol::top::process_list::{ProcessListTracer, ProcessListWatcher};
 use tokio::sync::Mutex;
 
+pub type ListenersMap = Arc<Mutex<HashMap<ProviderReqId, ()>>>;
+
 pub struct TopExecutor {
-    listeners: Arc<Mutex<HashMap<ProviderReqId, ()>>>,
+    listeners: ListenersMap,
     process_tracer: ProcessListTracer,
     process_watcher: Option<ProcessListWatcher>,
 }
