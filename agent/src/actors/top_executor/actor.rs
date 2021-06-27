@@ -1,4 +1,5 @@
 mod consumer;
+mod process_tracker;
 
 use crate::actors::supervisor::{Executor, Supervisor};
 use anyhow::Error;
@@ -6,10 +7,12 @@ use async_trait::async_trait;
 use meio::{Actor, Context, InterruptedBy, StartedBy, TaskAddress};
 use rill_protocol::io::provider::ProviderReqId;
 use std::collections::HashMap;
+use std::sync::Arc;
 use tame_protocol::top::process_list::{ProcessListTracer, ProcessListWatcher};
+use tokio::sync::Mutex;
 
 pub struct TopExecutor {
-    listeners: HashMap<ProviderReqId, ()>,
+    listeners: Arc<Mutex<HashMap<ProviderReqId, ()>>>,
     process_tracer: ProcessListTracer,
     process_watcher: Option<ProcessListWatcher>,
 }
@@ -18,7 +21,7 @@ impl TopExecutor {
     pub fn new() -> Self {
         let (process_tracer, process_watcher) = ProcessListTracer::new();
         Self {
-            listeners: HashMap::new(),
+            listeners: Arc::new(Mutex::new(HashMap::new())),
             process_tracer,
             process_watcher: Some(process_watcher),
         }

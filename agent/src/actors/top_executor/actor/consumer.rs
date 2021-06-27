@@ -26,14 +26,14 @@ impl Consumer<Result<ActionEnvelope<ProcessListState>, BroadcastStreamRecvError>
         let envelope = event?;
         match envelope.activity {
             Activity::Connected => {
-                self.listeners.insert(envelope.origin, ());
+                self.listeners.lock().await.insert(envelope.origin, ());
                 // TODO: Send the default mode directly
             }
             Activity::Action(action) => {
                 // TODO: Switch mode?
             }
             Activity::Disconnected => {
-                self.listeners.remove(&envelope.origin);
+                self.listeners.lock().await.remove(&envelope.origin);
             }
         }
         Ok(())

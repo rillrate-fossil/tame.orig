@@ -8,7 +8,7 @@ pub const LOCATION: Location = Location::new("system:process_list");
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProcessRecord {
     /// Name of a process.
-    name: String,
+    pub name: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
