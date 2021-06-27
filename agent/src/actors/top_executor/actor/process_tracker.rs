@@ -28,7 +28,7 @@ impl LiteTask for ProcessTracker {
     async fn repeatable_routine(&mut self) -> Result<Option<Self::Output>, Error> {
         self.system.refresh_all();
         let mut snapshot = HashMap::new();
-        for (pid, proc) in self.system.get_processes().iter().take(20) {
+        for (pid, proc) in self.system.get_processes() {
             let info = ProcessRecord {
                 name: proc.name().to_string(),
                 pid: *pid,
