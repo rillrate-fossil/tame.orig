@@ -1180,6 +1180,7 @@ dependencies = [
  "rill-engine",
  "rill-protocol",
  "serde",
+ "vectorize",
 ]
 
 [[package]]

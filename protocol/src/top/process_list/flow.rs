@@ -16,6 +16,7 @@ pub struct ProcessRecord {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProcessListState {
+    #[serde(with = "vectorize")]
     pub snapshot: HashMap<Pid, ProcessRecord>,
 }
 
