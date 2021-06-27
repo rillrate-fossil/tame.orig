@@ -40,6 +40,7 @@ impl Executor for TopExecutor {}
 impl StartedBy<Supervisor> for TopExecutor {
     async fn handle(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
         self.consumer(ctx)?;
+        self.spawn_tracker(ctx);
         Ok(())
     }
 }
