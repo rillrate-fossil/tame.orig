@@ -1,7 +1,7 @@
 mod consumer;
 mod process_runner;
 
-use crate::actors::supervisor::Supervisor;
+use crate::actors::supervisor::{Executor, Supervisor};
 use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Actor, Context, InterruptedBy, StartedBy, TaskAddress};
@@ -9,7 +9,7 @@ use process_runner::ProcWaiter;
 use tame_protocol::cmd::log_flow::LogFlowTracer;
 use tame_protocol::cmd::process_monitor::{Command, ProcessMonitorTracer, ProcessMonitorWatcher};
 
-pub struct Forwarder {
+pub struct CmdExecutor {
     command: Command,
     manual: bool,
     process_tracer: ProcessMonitorTracer,
@@ -18,7 +18,7 @@ pub struct Forwarder {
     child: Option<TaskAddress<ProcWaiter>>,
 }
 
-impl Forwarder {
+impl CmdExecutor {
     pub fn new(command: Command, manual: bool) -> Self {
         let (process_tracer, process_watcher) = ProcessMonitorTracer::new(command.clone());
         let (log_tracer, _log_watcher) = LogFlowTracer::new();
@@ -33,12 +33,14 @@ impl Forwarder {
     }
 }
 
-impl Actor for Forwarder {
+impl Actor for CmdExecutor {
     type GroupBy = ();
 }
 
+impl Executor for CmdExecutor {}
+
 #[async_trait]
-impl StartedBy<Supervisor> for Forwarder {
+impl StartedBy<Supervisor> for CmdExecutor {
     async fn handle(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
         self.listen_to_actions(ctx)?;
         if !self.manual {
@@ -49,7 +51,7 @@ impl StartedBy<Supervisor> for Forwarder {
 }
 
 #[async_trait]
-impl InterruptedBy<Supervisor> for Forwarder {
+impl InterruptedBy<Supervisor> for CmdExecutor {
     async fn handle(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
         ctx.shutdown();
         Ok(())

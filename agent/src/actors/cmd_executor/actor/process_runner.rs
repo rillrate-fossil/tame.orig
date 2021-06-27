@@ -1,4 +1,4 @@
-use super::Forwarder;
+use super::CmdExecutor;
 use anyhow::Error;
 use async_trait::async_trait;
 use futures::stream::StreamExt;
@@ -10,7 +10,7 @@ use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::{Child, ChildStderr, Command as TokioCommand};
 use tokio_stream::wrappers::LinesStream;
 
-impl Forwarder {
+impl CmdExecutor {
     pub fn spawn_process(&mut self, ctx: &mut Context<Self>) {
         if self.child.is_none() {
             self.log_tracer.clear_logs();
@@ -81,7 +81,7 @@ impl LiteTask for ProcWaiter {
 }
 
 #[async_trait]
-impl TaskEliminated<ProcWaiter, ()> for Forwarder {
+impl TaskEliminated<ProcWaiter, ()> for CmdExecutor {
     async fn handle(
         &mut self,
         _id: IdOf<ProcWaiter>,
@@ -124,7 +124,7 @@ impl LiteTask for LogReader {
 }
 
 #[async_trait]
-impl TaskEliminated<LogReader, ()> for Forwarder {
+impl TaskEliminated<LogReader, ()> for CmdExecutor {
     async fn handle(
         &mut self,
         _id: IdOf<LogReader>,

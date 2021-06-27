@@ -1,4 +1,4 @@
-use super::Forwarder;
+use super::CmdExecutor;
 use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Consumer, Context};
@@ -11,7 +11,7 @@ use tokio_stream::wrappers::{errors::BroadcastStreamRecvError, BroadcastStream};
 #[error("inner value already taken")]
 struct AlreadyTaken;
 
-impl Forwarder {
+impl CmdExecutor {
     pub fn listen_to_actions(&mut self, ctx: &mut Context<Self>) -> Result<(), Error> {
         let rx = self.process_watcher.take().ok_or(AlreadyTaken)?;
         let stream = BroadcastStream::new(rx);
@@ -21,7 +21,9 @@ impl Forwarder {
 }
 
 #[async_trait]
-impl Consumer<Result<ActionEnvelope<ProcessMonitorState>, BroadcastStreamRecvError>> for Forwarder {
+impl Consumer<Result<ActionEnvelope<ProcessMonitorState>, BroadcastStreamRecvError>>
+    for CmdExecutor
+{
     async fn handle(
         &mut self,
         event: Result<ActionEnvelope<ProcessMonitorState>, BroadcastStreamRecvError>,

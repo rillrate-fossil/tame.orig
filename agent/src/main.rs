@@ -7,6 +7,7 @@ use opts::{Opts, SubCommand};
 use rill_engine::EngineConfig;
 use rill_protocol::io::provider::EntryId;
 use std::env;
+use tame::actors::cmd_executor::CmdExecutor;
 use tame::actors::supervisor::{Supervisor, SupervisorLink};
 use tame_protocol::cmd::process_monitor::Command;
 use tame_protocol::cmd::provider_type;
@@ -28,7 +29,8 @@ async fn main() -> Result<(), Error> {
             let sup = Supervisor::new(config);
             let addr = System::spawn(sup);
             let mut link: SupervisorLink = addr.link();
-            link.spawn_command(command, cmd.no_spawn).await?;
+            let executor = CmdExecutor::new(command, cmd.no_spawn);
+            link.spawn_executor(executor).await?;
             System::wait_or_interrupt(addr).await?;
         }
     }
