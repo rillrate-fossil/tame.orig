@@ -6,8 +6,8 @@ use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Actor, Context, InterruptedBy, StartedBy, TaskAddress};
 use process_runner::ProcWaiter;
-use tame_protocol::log_flow::LogFlowTracer;
-use tame_protocol::process_monitor::{Command, ProcessMonitorTracer, ProcessMonitorWatcher};
+use tame_protocol::cmd::log_flow::LogFlowTracer;
+use tame_protocol::cmd::process_monitor::{Command, ProcessMonitorTracer, ProcessMonitorWatcher};
 
 pub struct Forwarder {
     command: Command,

@@ -7,8 +7,8 @@ use rill_engine::EngineConfig;
 use rill_protocol::io::provider::EntryId;
 use std::env;
 use tame::actors::supervisor::{Supervisor, SupervisorLink};
-use tame_protocol::process_monitor::Command;
-use tame_protocol::provider_type;
+use tame_protocol::cmd::process_monitor::Command;
+use tame_protocol::cmd::provider_type;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {

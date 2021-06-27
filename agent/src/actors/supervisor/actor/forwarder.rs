@@ -3,7 +3,7 @@ use crate::actors::forwarder::Forwarder;
 use anyhow::Error;
 use async_trait::async_trait;
 use meio::{Action, ActionHandler, Context, Eliminated, IdOf};
-use tame_protocol::process_monitor::Command;
+use tame_protocol::cmd::process_monitor::Command;
 
 pub struct SpawnCommand {
     command: Command,
