@@ -32,6 +32,7 @@ impl LiteTask for ProcessTracker {
             let info = ProcessRecord {
                 name: proc.name().to_string(),
                 pid: *pid,
+                cpu: proc.cpu_usage().into(),
             };
             snapshot.insert(*pid, info);
         }

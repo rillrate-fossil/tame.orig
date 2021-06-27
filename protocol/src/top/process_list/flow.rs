@@ -1,3 +1,4 @@
+use ordered_float::OrderedFloat;
 use rill_protocol::flow::core::{Flow, TimedEvent};
 use rill_protocol::flow::location::Location;
 use rill_protocol::io::provider::StreamType;
@@ -13,6 +14,7 @@ pub struct ProcessRecord {
     /// Name of a process.
     pub name: String,
     pub pid: Pid,
+    pub cpu: OrderedFloat<f32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -1177,6 +1177,7 @@ version = "0.2.0"
 dependencies = [
  "derive_more",
  "once_cell",
+ "ordered-float",
  "rill-engine",
  "rill-protocol",
  "serde",
