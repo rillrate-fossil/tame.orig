@@ -14,6 +14,8 @@ pub struct Opts {
 pub enum SubCommand {
     #[clap(about = "Spawn and track a command")]
     Cmd(CmdCommand),
+    #[clap(about = "Track process of the system")]
+    Top(TopCommand),
 }
 
 #[derive(Clap)]
@@ -23,3 +25,6 @@ pub struct CmdCommand {
     #[clap(long, about = "No spawn command immediately")]
     pub no_spawn: bool,
 }
+
+#[derive(Clap)]
+pub struct TopCommand {}

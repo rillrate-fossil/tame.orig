@@ -7,18 +7,19 @@ use opts::{Opts, SubCommand};
 use rill_engine::EngineConfig;
 use rill_protocol::io::provider::EntryId;
 use std::env;
-use tame::actors::cmd_executor::CmdExecutor;
 use tame::actors::supervisor::{Supervisor, SupervisorLink};
 use tame_protocol::cmd::process_monitor::Command;
-use tame_protocol::cmd::provider_type;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     let opts = Opts::parse();
     env_logger::try_init()?;
     log::info!("Starting RillRate Agent...");
+    let addr;
     match opts.subcmd {
         SubCommand::Cmd(cmd) => {
+            use tame::actors::cmd_executor::CmdExecutor;
+            use tame_protocol::cmd::provider_type;
             let command = extract_command(cmd.command)?;
             let mut config = EngineConfig::new(provider_type());
             if let Some(name) = opts.name {
@@ -27,13 +28,26 @@ async fn main() -> Result<(), Error> {
                 config.name = Some(smart_name(&command.command));
             }
             let sup = Supervisor::new(config);
-            let addr = System::spawn(sup);
+            addr = System::spawn(sup);
             let mut link: SupervisorLink = addr.link();
             let executor = CmdExecutor::new(command, cmd.no_spawn);
             link.spawn_executor(executor).await?;
-            System::wait_or_interrupt(addr).await?;
+        }
+        SubCommand::Top(top) => {
+            use tame::actors::top_executor::TopExecutor;
+            use tame_protocol::top::provider_type;
+            let mut config = EngineConfig::new(provider_type());
+            if let Some(name) = opts.name {
+                config.name = Some(name);
+            }
+            let sup = Supervisor::new(config);
+            addr = System::spawn(sup);
+            let mut link: SupervisorLink = addr.link();
+            let executor = TopExecutor::new();
+            link.spawn_executor(executor).await?;
         }
     }
+    System::wait_or_interrupt(addr).await?;
     Ok(())
 }
 
