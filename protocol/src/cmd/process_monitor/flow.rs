@@ -43,7 +43,7 @@ impl Flow for ProcessMonitorState {
     type Event = ProcessMonitorEvent;
 
     fn stream_type() -> StreamType {
-        StreamType::from("rillrate::agent::process_monitor::v0")
+        StreamType::from("rillrate::tame::cmd::process_monitor::v0")
     }
 
     fn apply(&mut self, event: TimedEvent<Self::Event>) {
